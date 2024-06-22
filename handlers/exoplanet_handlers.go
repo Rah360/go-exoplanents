@@ -68,35 +68,64 @@ func (h *ExoplanetHandler) UpdateExoplanet(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	id, err := uuid.Parse(vars["id"])
 	if err != nil {
+		utils.ErrorResponse(w, http.StatusBadRequest, "invalid UUID")
+		return
+	}
+
+	existingExoplanet, err := h.service.GetExoplanetByID(id)
+	if err != nil {
+		utils.ErrorResponse(w, http.StatusNotFound, "exoplanet not found")
+		return
+	}
+
+	var updateData map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	var exoplanet models.Exoplanet
-	if err := json.NewDecoder(r.Body).Decode(&exoplanet); err != nil {
+
+	// Update only the provided fields
+	if name, ok := updateData["name"].(string); ok {
+		existingExoplanet.Name = name
+	}
+	if description, ok := updateData["description"].(string); ok {
+		existingExoplanet.Description = description
+	}
+	if distance, ok := updateData["distance"].(float64); ok {
+		existingExoplanet.Distance = int(distance)
+	}
+	if radius, ok := updateData["radius"].(float64); ok {
+		existingExoplanet.Radius = radius
+	}
+	if mass, ok := updateData["mass"].(float64); ok {
+		existingExoplanet.Mass = &mass
+	}
+	if exoplanetType, ok := updateData["type"].(string); ok {
+		existingExoplanet.Type = models.ExoplanetType(exoplanetType)
+	}
+
+	if err := existingExoplanet.Validate(); err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if err := exoplanet.Validate(); err != nil {
-		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	exoplanet.ID = id
-	if err := h.service.UpdateExoplanet(exoplanet); err != nil {
+
+	if err := h.service.UpdateExoplanet(existingExoplanet); err != nil {
 		utils.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.JSONResponse(w, http.StatusOK, exoplanet)
+
+	utils.JSONResponse(w, http.StatusOK, existingExoplanet)
 }
 
 func (h *ExoplanetHandler) DeleteExoplanet(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := uuid.Parse(vars["id"])
 	if err != nil {
-		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
+		utils.ErrorResponse(w, http.StatusBadRequest, "planet id not found")
 		return
 	}
 	if err := h.service.DeleteExoplanet(id); err != nil {
-		utils.ErrorResponse(w, http.StatusInternalServerError, err.Error())
+		utils.ErrorResponse(w, http.StatusInternalServerError, "failed to delete planet")
 		return
 	}
 	utils.JSONResponse(w, http.StatusNoContent, nil)
