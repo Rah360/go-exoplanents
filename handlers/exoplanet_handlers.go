@@ -124,6 +124,13 @@ func (h *ExoplanetHandler) DeleteExoplanet(w http.ResponseWriter, r *http.Reques
 		utils.ErrorResponse(w, http.StatusBadRequest, "planet id not found")
 		return
 	}
+
+	_, exoplanentErr := h.service.GetExoplanetByID(id)
+	if exoplanentErr != nil {
+		utils.ErrorResponse(w, http.StatusNotFound, "exoplanet not found")
+		return
+	}
+
 	if err := h.service.DeleteExoplanet(id); err != nil {
 		utils.ErrorResponse(w, http.StatusInternalServerError, "failed to delete planet")
 		return
