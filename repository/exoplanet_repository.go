@@ -15,6 +15,7 @@ type ExoplanetRepository interface {
 	DeleteExoplanet(id uuid.UUID) error
 }
 
+// in memory storage for planets
 type InMemoryExoplanetRepository struct {
 	exoplanets map[uuid.UUID]models.Exoplanet
 }

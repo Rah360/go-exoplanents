@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// JSONResponse writes a JSON response with the given status code and payload.
+// returns  JSON response with the given status code and payload.
 func JSONResponse(w http.ResponseWriter, statusCode int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
@@ -14,7 +14,7 @@ func JSONResponse(w http.ResponseWriter, statusCode int, payload interface{}) {
 	}
 }
 
-// ErrorResponse writes an error response with the given status code and message.
+// returns error response with the given status code and message.
 func ErrorResponse(w http.ResponseWriter, statusCode int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
