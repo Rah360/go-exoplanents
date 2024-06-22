@@ -19,7 +19,7 @@ type InMemoryExoplanetRepository struct {
 	exoplanets map[uuid.UUID]models.Exoplanet
 }
 
-func NewInMemoryExoplanentRepository() *InMemoryExoplanetRepository {
+func NewInMemoryExoplanetRepository() *InMemoryExoplanetRepository {
 	return &InMemoryExoplanetRepository{
 		exoplanets: make(map[uuid.UUID]models.Exoplanet),
 	}

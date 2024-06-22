@@ -10,8 +10,8 @@ import (
 type ExoplanetType string
 
 const (
-	GasGiant    ExoplanetType = "GasGiant"
-	Terrestrial ExoplanetType = "Terrestrial"
+	GasGiant    ExoplanetType = "gasGiant"
+	Terrestrial ExoplanetType = "terrestrial"
 )
 
 type Exoplanet struct {
